@@ -1,0 +1,637 @@
+---
+title: "STA 104 Term Project"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# Siddharth Das & Martin Topacio
+
+# Professor Christina Drake
+
+# 12/8/23
+
+### Introduction
+
+In this term project, we are working with data from the Excel file "term project.xslx", of which contains data from 4 different distributions. We are interested in conducting several nonparametric tests on the 4 distributions and comparing their results to normal and t-test parametric procedures. We will supplement our analyses by conducting diagnostic tests on the given distributions. In these diagnostic tests, we will visualize the data using histograms, box plots, and normal Q-Q plots. When analyzing the 4 distributions, we plan to discuss which nonparametric approach we felt was best for the distribution based off of the assumptions of the tests. 
+
+### Data Cleaning
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+# Load package to read .xlsx file
+library("readxl")
+
+# Read data and convert all columns to "numeric" data type
+data <- read_excel("term project data.xlsx", col_types = "numeric")
+
+# Convert tibble into DataFrame
+data <- as.data.frame(data)
+
+# Rename headers
+colnames(data) <- c("Sample1-sample", "Sample2-group1", "Sample2-group2", 
+                    "Sample3-distrib1", "Sample3-distrib2", "Sample4-cat1", 
+                    "Sample4-cat2", "Sample4-cat3", "Sample4-cat4")
+
+# Remove first row of empty data values
+data <- data[-1,]
+
+# Reset index
+rownames(data) <- NULL
+```
+
+### Visualization Methods
+
+The first step to deciding which parametric or non-parametric statistical method to apply is visualizing the data for normality and outliers. The 3 visualizations we will analyze are histograms, normal probability plots, and boxplots. The histogram can help us gain a better understanding of the distribution's symmetry, skewness, central tendency, and potential outliers. The Normal Q-Q Plot gives us insight into whether the data is linear, normal, symmetrical, or has potential outliers. The sample is linear if the points in the Normal Q-Q Plot follow the straight line closely. A normal distribution is indicated by the points closely following the straight line. Lastly, the boxplot helps us understand the distribution of the data in terms of central tendency, variability, skewness, and outliers. The line within the box indicates the median. The size of the box represents the middle 50% of the data, so a smaller box indicates smaller variability. If the length of the 2 whiskers differ, the data is skewed towards the shorter whisker.
+
+Let's begin by visualizing the Sample 1 data with a histogram, normal probability plot, and boxplot.
+
+## Sample 1
+
+### Normality Plots
+
+```{r, echo = FALSE}
+# Define sample 1
+sample1 <- data$`Sample1-sample`
+
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Check normality utilizing visualizations
+# Histogram
+hist(sample1, main="Histogram of Sample 1")
+
+# Normal Q-Q Plot
+qqnorm(sample1)
+qqline(sample1)
+
+# Boxplot
+boxplot(sample1, main="Boxplot of Sample 1")
+```
+
+### Sample 1 Plot Interpretation
+
+Looking at the three plots, we can get an idea of the normality and outliers for the sample 1 data. From the histogram, we can see an asymmetric distribution that is noncentered with an outlier at the top of the data. The normal Q-Q plot shows us that the sample 1 data follows the line closely, indicating that the data is linear. However, we can clearly see the outlier at the top right corner of the plot. The boxplot for sample 1 shows a left skew, small variability, and once again, the outlier at the top of the data.
+
+### Hypothesis
+
+The null hypothesis is that the mean of the sample equals 0. The alternative hypothesis is that the mean is greater than 0.
+
+### Methods
+
+DISCUSS MULTIPLE NONPARAMETRIC METHODS AND WHY BINOMIAL TEST IS MOST APPROPRIATE
+
+We determined the binomial test to be the most appropriate for Sample 1 because it is nonparametric and tests to see if a theoretically expected distribution of observations deviates in a significant way using sample data. This description of the test matches up with the non-normal data that Sample 1 provides, and for a simple test for checking if the mean is either 0 or greater, the binomial test proved to be the most appropriate. 
+
+STATE PREFERRED NONPARAMETRIC APPROACH AND WHY WE CHOSE THAT BASED OFF ASSUMPTIONS
+
+NEED TO FINISH
+
+We will conduct the Binomial Test as a nonparametric test to make a conclusion about the mean. Furthermore, we will compute the parametric one sample T-Test for means for further comparison. We believe the Binomial Test is ideal for this sample because it only contains 1 group and we would like to investigate if the mean for this single group is zero or greater. The simplicity of the data set lines up with the simplicity of the binomial test, and since our data is clearly non-normal as investigated above, using a nonparametric test would work. 
+
+### Binomial Test
+
+The Binomial Test is an exact test of the statistical significance of deviations from a theoretically expected distribution of observations into two categories using sample data. It tests for the median, and assumes that the n samples are mutually independent, that the probability of a given outcome is the same for all n samples, and that the only source of variation is simple, random, and binomial.
+
+### One Sample T-Test
+
+The one-sample T-test determines if an unknown population mean is different from a specified value. It assumes that the dependent variable is continuous, normally distributed, and has no outliers, and that the observations are independent of one another.
+
+```{r, echo = FALSE}
+# # Binomial Test
+
+# Calculate the number of values greater than hypothesized median 0
+B <- sum(sample1 > 0)
+B
+
+# Calculate test statistic Z_B
+Z_B = (B - (0.5 * 30)) / sqrt(0.25 * 30)
+Z_B
+
+# One sample T-test
+sample1_t_test <- t.test(data$`Sample1-sample`, mu = 0, alternative = "greater")
+sample1_t_test
+```
+
+### Binomial Test Interpretation
+
+NEED TO COMPLETE
+
+For the Binomial Test at significance level alpha = 0.05, we reject H_o in favor of H_a if Z_B \> Z\_(1-alpha). Assuming alpha = 0.05, Z\_(1-alpha) = Z\_(0.95) = 1.645.
+
+Both tests result in rejecting the null hypothesis because the test stat \> critical value and p value less than 0.05
+
+What is the conclusion?
+
+### One Sample T-Test Interpretation 
+
+We obtain a p-value of 0.01972 from the One-Sample T-test, which is lower than alpha = 0.05, resulting in us rejecting the null hypothesis.
+
+### Comparison of Non-Parametric & Parametric Methods
+
+Both tests result in rejecting the null hypothesis because the test stat \> critical value and p value less than 0.05
+Next, let's analyze Sample 2 by utilizing the same visualizations methods for both groups.
+
+## Sample 2
+
+### Normality Plots
+
+```{r, echo = FALSE}
+# Create data frame for sample2
+sample2 <- data.frame(group1 = data$`Sample2-group1`, group2 = data$`Sample2-group2`)
+
+# Define vectors
+group1 <- sample2$group1
+group2 <- sample2$group2
+
+# Check normality utilizing visualizations - Group 1
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(group1, main="Histogram of Group 1")
+
+# Normal Q-Q Plot
+qqnorm(group1)
+qqline(group1)
+
+# Boxplot
+boxplot(group1, main="Boxplot of Group 1")
+
+
+# Check normality utilizing visualizations - Group 2
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(group2, main="Histogram of Group 2")
+
+# Normal Q-Q Plot
+qqnorm(group2)
+qqline(group2)
+
+# Boxplot
+boxplot(group2, main="Boxplot of Group 2")
+```
+
+### Sample 2 Plot Interpretation
+
+Looking at the three plots for sample 2, we see from the histogram that the data is skewed right, with an outlier. From the normal Q-Q plot, we can see the outlier again at the top right corner of the plot, but the rest of the data generally aligns with the line of reference. We can also see the slightest S-shape curve from the points, indicating that the data may have more extreme values than the normal distribution in the tails. The box plot tells us that the data is skewed right, and that this sample has more variability compared to sample 1, which had a smaller box size.
+
+### Part A
+
+### Hypothesis
+
+We will be conducting 2 different hypothesis tests. The first test has the null hypothesis that group mean of group 1 is equal to the group mean of group 2, with an alternative hypothesis that the group mean of group 1 is less than the group mean of group 2. For the second test, the null hypothesis is that the variances of the two groups are equal, and the alternative hypothesis is that the variances of the two groups are unequal.  
+
+### Methods
+
+DISCUSS MULTIPLE NONPARAMETRIC METHODS AND WHY WILCOXON RANK SUM TEST IS MOST APPROPRIATE
+
+Some possible nonparametric methods to use on Sample 2 include the Mann-Whitney test, which is used to compare two independent groups, testing for whether the distributions are the same, the Chi-Square test, which is used to test for association between the two categorial variables, and the Wilcoxon Rank-Sum test, which is used to compare two samples that are related, testing for whether or not the means of the two paired groups are equivalent. Considering the data given to us with Sample 2, it is apparent that the Wilcoxon Rank-Sum test is the most appropriate test, because Sample 2 gives us two paired groups that are related, an assumption of the Wilcoxon test that allows for a good comparison between the two groups. It would make sense to test for comparison between two related groups.
+
+STATE PREFERRED NONPARAMETRIC APPROACH AND WHY WE CHOSE THAT BASED OFF ASSUMPTIONS
+
+Our preferred nonparametric approach for Sample 2 is the Wilcoxon Rank-Sum test, based on its assumption that the data are paired and from the same population, something that is apparent with Sample 2. Since the first hypothesis test was laid out as a comparison of group means, the Wilcoxon test is also appropriate since it compares group means. Being able to compare central tendencies through mean is another reason why we deemed the Wilcoxon test our preference for Sample 2, as it matches up with our prompted hypothesis test. 
+
+### Wilcoxon Rank Sum Test
+
+The Wilcoxon Rank Sum Test is for determining whether the mean values of two independent groups differ significantly from each other. It assumes that the data is from the same population and paired, that the data can be measured on at least an interval scale, and that the data was chosen randomly and independently.
+
+### 2 Sample T-Test
+
+The two-sample T-test is a test of whether center of two distributions are equal. This test assumes that the data values are independent, the data was obtained from a random sample, the data in each group is normally distributed, the data values are continuous, and that the variances for the two groups are equal. We perform a location shift Two-Sample test if the populations being sampled are normally distributed. 
+
+```{r, echo = FALSE}
+# # Part A
+
+# # Wilcoxon Test
+
+# Combine samples for rank assignment
+combined_sample2 <- c(group1, group2)
+
+# Assign ranks to the combined samples
+combined_ranks <- rank(combined_sample2)
+
+# Calculate the rank sum for each group
+group1_ranksum <- sum(combined_ranks[1:30])
+group2_ranksum <- sum(combined_ranks[31:60])
+
+# Calculate W test statistic
+W <- min(group1_ranksum, group2_ranksum)
+
+group1_ranksum
+group2_ranksum
+W
+
+combined_sample2
+
+# 2 sample T-test
+sample2_t_test <- t.test(data$`Sample2-group1`, data$`Sample2-group2`, 
+                         alternative = "less")
+sample2_t_test
+
+# TO BE DELETED
+wilcox.test(sample2$group1, sample2$group2, alternative = "less")
+```
+
+### Wilcoxon Rank Sum Test Interpretation
+
+From the Wilcoxon Rank-Sum test, we obtain a p-value of 0.001444. This p-value is less than the significance level of 5%, which leads us to reject the null hypothesis that there is no statistically significant difference between the means of group 1 and group 2. We can conclude that there is a statistically significant difference between the means of group 1 and group 2. 
+
+### Two Sample T-Test Interpretation 
+
+From the Two-Sample T-test, we obtain a p-value of 0.002426, less than alpha = 0.05, leading us to reject the null hypothesis that group 1 and group 2 have equal means, which means we can conclude that there is in fact a statistically significant difference between the group means of group 1 and group 2. 
+
+### Comparison of Non-Parametric & Parametric Methods
+
+Comparing the methods of the Wilcoxon Rank-Sum Test and the Two-Sample T-Test and the results we obtained from each of them, we see that both tests came to the same conclusion: that there is a statistically significant difference between the group means in the null hypotheses. Both tests gave us p-values that were very close to 0, which meant we rejected the null hypothesis in both cases. We can note from this sample 2 that a parametric test and a nonparametric test achieved the same goal in the same fashion. 
+
+### Part B
+
+### Hypothesis
+
+The null hypothesis is that both variances are equal. The alternative hypothesis is that the variances are unequal.
+
+### Methods
+
+DISCUSS MULTIPLE NONPARAMETRIC METHODS AND WHY FLIGNER-KILEEN TEST IS MOST APPROPRIATE
+
+Some possible nonparametric methods to be used for comparing variances are the Kruskal-Wallis test, the nonparametric version of an ANOVA test, and the Fligner-Kileen test, which checks for homogenity of variances based off of ranks. We found the Fligner-Kileen test to be the most appropriate for us to use on Sample 2 because we are given hypotheses that compare variances, lending credence to the notion that the Fligner-Kileen test would be a good fit for us. Additionally, we find that the Fligner-Kileen test is simple to perform in R code, the method by which this report was requested to be produced in. 
+
+STATE PREFERRED NONPARAMETRIC APPROACH AND WHY WE CHOSE THAT BASED OFF ASSUMPTIONS
+
+As stated above, our preferred nonparametric approach is the Fligner-Kileen test. Since Sample 2 violates normality assumptions, we turn to an appropriate nonparametric test, since it does not require the required assumptions to be analyzed. 
+
+### Fligner-Killeen Test
+
+We will conduct the Fligner-Kileen Test as a nonparametric test for homogeneity of variances. In addition, we will compute the parametric F-Test for variances for further comparison. The Fligner-Kileen Test is ideal for this data set because it does not require the data to be normally distributed.
+
+### F-Test for Variances
+
+The F-test determines if two populations have the same variance. It assumes that the samples are normally distributed and independent of each other.
+
+```{r, echo = FALSE}
+# # Part B
+
+# Stack 4 outcome columns into 1 column and create group(factor) column
+sample2_combined <- stack(data[2:3])
+
+# Rename headers
+colnames(sample2_combined) <- c("outcome", "group")
+
+# # Fligner-Killeen’s Test - Nonparametric Test for Equality of Variances
+fligner.test(outcome ~ group, data = sample2_combined)
+
+# # F-Test for Variances
+variance_f_test <- var.test(group1, group2)
+
+variance_f_test
+sample2_combined
+```
+
+### Fligner-Killen Test Interpretation
+
+The non-parametric Fligner-Killen Test returns the p-value = 0.0004667, which is less than the assumed significance level of alpha = 0.05. Since the p-value \< alpha, there is sufficient evidence to reject the null hypothesis, and conclude that there is a significant difference between the sample variances.
+
+### F-Test for Variances Interpretation
+
+Similarly, the parametric F-Test for variances returns the p-value = 0.0000000004319, which is less than alpha = 0.05. Since the p-value \< alpha, we must reject the null hypothesis, and conclude that there is not a statistically significant difference between the sample variances.
+
+### Comparison of Non-Parametric & Parametric Methods
+
+Comparing the nonparametric method of the Fligner-Kileen test and the parametric method of the F-test for variance, both methods  
+
+Moving on, let's transition into the visualizations of Sample 3.
+
+## Sample 3
+
+### Normality Plots
+
+```{r, echo = FALSE}
+# Create data frame for sample3
+sample3 <- data.frame(distrib1 = data$`Sample3-distrib1`, distrib2 = data$`Sample3-distrib2`)
+
+# Define distributions
+distrib1 <- sample3$distrib1
+distrib2 <- sample3$distrib2
+
+# Check normality utilizing visualizations - Distrib 1
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(distrib1, main="Histogram of Distrib 1")
+
+# Normal Q-Q Plot
+qqnorm(distrib1)
+qqline(distrib1)
+
+# Boxplot
+boxplot(distrib1, main="Boxplot of Distrib 1")
+
+# Check normality utilizing visualizations - Distrib 2
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(distrib2, main="Histogram of Distrib 2")
+
+# Normal Q-Q Plot
+qqnorm(distrib2)
+qqline(distrib2)
+
+# Boxplot
+boxplot(distrib2, main="Boxplot of Distrib 2")
+```
+
+### Sample 3 Plot Interpretation
+
+Sample 3 deals with two different distributions, denoted as distribution 1 and distribution 2. Distribution 1\'s normality graphs show us several things. The histogram for distribution 1 shows a left skew with no outliers in the asymmetric distribution. The normal Q-Q plot for distribution 1 shows us that the distribution is linear, as the points generally follow our line of reference. The boxplot does not depict a skew for the data, interestingly, and depicts a more centered view of the data than the histogram originally let on. There is more variability in this distribution, as the larger box shows us. Looking at distribution 2, we see that it does not have a real skew in the histogram, yet the data points follow the line depicted in the normal Q-Q plot. The box in the box plot is relatively large, indicating the higher level of variability in distribution 2. The box plot also shows that there is not a skew with this distribution.
+
+### Hypothesis
+
+The null hypothesis for the Kolmogrov-Smirnov test is that distributions are the same, while the alternative hypothesis is that the distributions are different. 
+
+### Method
+
+DISCUSS MULTIPLE NONPARAMETRIC METHODS AND WHY KOLMOGROV-SMIRNOV TEST IS MOST APPROPRIATE
+
+The Kolmogrov-Smirnov test deals with comparing distributions, which makes it the most appropriate test for Sample 3, which prompts us to work with two different distributions. 
+
+STATE PREFERRED NONPARAMETRIC APPROACH AND WHY WE CHOSE THAT BASED OFF ASSUMPTIONS
+
+Our preferred nonparametric approach to Sample 3's data is the Kolmogrov-Smirnov test, based off of the assumptions that the samples (or distributions in this case) are randomly drawn from the same set of values and that the two samples are mutually independent. As seen above with the diagnostic tests, both distribution 1 and distribution 2 violate normality assumptions due to their outliers, so we would turn to the nonparametric test of the Kolmogrov-Smirnov test to assess our distributions. 
+
+### Kolmogorov-Smirnov Test
+
+The Kolmogrov-Smirnov test is a nonparametric test that determines whether two distributions are different. It assumes that the null hypothesis is that both samples are randomly drawn from the same set of values, that the two samples are mutually independent, that the scale of measurement is at least ordinal. The test is only exact for continuous variables, and conservative for discrete variables.
+
+```{r, echo = FALSE}
+# # Kolmogorov-Smirnov Test
+
+# Sort data frame into ascending order
+sample3 <- sample3[order(distrib1, distrib2),]
+
+# TO BE DELETED
+ks.test(sample3$distrib1, sample3$distrib2)
+
+# Define values for ecdf function
+distrib1 <- c(sample3$distrib1)
+distrib2 <- c(sample3$distrib2)
+
+# Sort values into ascending order
+#distrib1 <- sort(distrib1)
+#distrib2 <- sort(distrib2)
+
+# Define function for distrib1 ecdf
+ecdf_function1 <- ecdf(distrib1)
+
+# Define function for distrib2 ecdf
+ecdf_function2 <- ecdf(distrib2)
+
+# Calculate CDF values for distrib1
+cdf1 <- ecdf_function1(distrib1)
+
+# Calculate CDF values for distrib1
+cdf2 <- ecdf_function2(distrib2)
+
+# Add CDF columns to data frame
+sample3$cdf1 <- cdf1
+sample3$cdf2 <- cdf2
+
+sample3$Absolute_Difference <- abs(sample3$cdf1 - sample3$cdf2)
+
+sample3
+```
+
+```{r, echo = FALSE}
+# Create data frame for sample3
+sample3 <- data.frame(distrib1 = data$`Sample3-distrib1`, distrib2 = data$`Sample3-distrib2`)
+
+# Define vectors
+# distrib1 <- sample3$distrib1
+# distrib2 <- sample3$distrib2
+
+# Define values for ecdf function
+distrib1 <- c(sample3$distrib1)
+distrib2 <- c(sample3$distrib2)
+
+# Sort samples for CDF calculation
+distrib1 <- sort(distrib1)
+distrib2 <- sort(distrib2)
+
+# Define function for distrib1 ecdf
+ecdf_function1 <- ecdf(distrib1)
+
+# Define function for distrib2 ecdf
+ecdf_function2 <- ecdf(distrib2)
+
+# # Compute Kolmogorov Smirnov Test Statistic
+# Calculate absolute difference in CDF values
+absolute_difference <- abs(ecdf_function1(distrib1) - ecdf_function2(distrib2))
+
+absolute_difference
+
+max_absolute_difference <- max(absolute_difference)
+
+# Critical value at alpha = 0.05
+critical_value <- 1.36 * sqrt((60) / (30 * 30))
+
+critical_value
+
+max_absolute_difference
+
+# TO BE DELETED
+##ks.test(sample3$distrib1, sample3$distrib2)
+```
+
+```{r, echo = FALSE}
+# Sort samples for CDF calculation
+distrib1 <- sort(distrib1)
+distrib2 <- sort(distrib2)
+
+# Define function for distrib1 ecdf
+ecdf_function1 <- ecdf(distrib1)
+
+# Define function for distrib2 ecdf
+ecdf_function2 <- ecdf(distrib2)
+
+# Calculate absolute difference in CDF values
+absolute_difference <- abs(ecdf_function1(distrib1) - ecdf_function2(distrib2))
+
+# Find the maximum absolute difference
+max_absolute_difference <- max(absolute_difference)
+
+# Print results
+cat("Max Absolute Difference:", max_absolute_difference, "\n")
+
+```
+
+### Kolmogorov-Smirnov Test Interpretation
+
+From the test, we obtain a p-value of 0.01469, which is lower than the selected alpha level of 0.05. Therefore, we would reject our null hypothesis that the distributions are the same, leading us to have evidence for the notion that the distributions are different from each other. 
+
+Finally, lets finish our statistical analysis by visualizing Sample 4 with the same visualization methods as the previous samples.
+
+## Sample 4
+
+### Normality Plots
+
+```{r, echo = FALSE}
+# Define treatment groups
+cat1 <- data$`Sample4-cat1`
+cat2 <- data$`Sample4-cat2`
+cat3 <- data$`Sample4-cat3`
+cat4 <- data$`Sample4-cat4`
+
+# Check normality utilizing visualizations - Cat 1
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(cat1, main="Histogram of Cat 1")
+
+# Normal Q-Q Plot
+qqnorm(cat1)
+qqline(cat1)
+
+# Boxplot
+boxplot(cat1, main="Boxplot of Cat 1")
+
+# Check normality utilizing visualizations - Cat 2
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(cat2, main="Histogram of Cat 2")
+
+# Normal Q-Q Plot
+qqnorm(cat2)
+qqline(cat2)
+
+# Boxplot
+boxplot(cat2, main="Boxplot of Cat 2")
+
+# Check normality utilizing visualizations - Cat 3
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(cat3, main="Histogram of Cat 3")
+
+# Normal Q-Q Plot
+qqnorm(cat3)
+qqline(cat3)
+
+# Boxplot
+boxplot(cat3, main="Boxplot of Cat 3")
+
+# Check normality utilizing visualizations - Cat 4
+# 3 plots arranged in 2 rows and 2 columns
+par(mfrow=c(2,2))
+
+# Histogram
+hist(cat4, main="Histogram of Cat 4")
+
+# Normal Q-Q Plot
+qqnorm(cat4)
+qqline(cat4)
+
+# Boxplot
+boxplot(cat4, main="Boxplot of Cat 4")
+```
+
+### Sample 4 Plot Interpretation
+
+Sample 4 deals with four different groups, denoted as cat 1, cat 2, cat 3, and cat 4. The histogram for cat 1 shows an extreme right skew in an asymmetric distribution. There is insight into a potential outlier at the far right side of the data set, which we will confirm with the other two plots. The normal Q-Q plot for cat 1 shows us that all but two data points follow the reference line. One of these two points is far away enough from the line to be determined as an outlier. The box plot for cat 1 shows a very small box, an indication of very small variability. We can also see three outlier points in this box plot. Moving on to cat 2\'s plots, we see from the histogram that the data is basically divided into points that fall on the far left, and points that fall on the far right for this asymmetric distribution. The normal Q-Q plot for cat 2\'s data reveals two outliers at the top right corner of the plot, but the rest of the points follow the line closely. The box plot for cat 2 shows three outliers and a small box, meaning the variability of cat 2\'s distribution is low. With cat 3, we can see from the histogram that the data is slightly skewed to the right, and the distribution is asymmetrical. The normal Q-Q plot for cat 3 shows at least 8 outliers, an extreme number compared to the other distributions covered so far. With at least 8 points being very far off of the reference line, it would be difficult to call this sample linear. The boxplot of cat 3 shows at least 6 outliers, with the box being very large, an indicator of high variability. Finally, cat 4\'s histogram shows a right skew and an asymmetrical distribution. The normal Q-Q plot depicts at least one definite outlier, with the other points generally following the line. The box plot confirms two of the points in this sample to be outliers, as well as confirming the skew to be to the right. The box is smaller, showing us a sample with low variability.
+
+### Hypothesis
+
+Our null hypothesis is that the group means of the groups (cat 1, cat 2, cat 3, cat 4) are equal to each other. Our alternative hypothesis is that at least one of the group means is not equal to the others. 
+
+### Methods
+
+DISCUSS MULTIPLE NONPARAMETRIC METHODS AND WHY THE PERMUTATION F-TEST IS MOST APPROPRIATE
+
+Our goal in this case for Sample 4 is to compare 4 different group means for cats 1-4, leaving the most appropriate nonparametric methods to be the either Friedman's test or the permutation F-test. We know that the permutation F-test has the same data setup as Friedman's test, which is meant to be the nonparametric counterpart of the parametric ANOVA 2-way test. We found that the permutation F-test is most appropriate due to the concepts taught in this course and our experience and familiarity with the test from prior conducting.
+
+STATE PREFERRED NONPARAMETRIC APPROACH AND WHY WE CHOSE THAT BASED OFF ASSUMPTIONS
+
+As stated above, our preferred nonparametric approach to Sample 4 is the permutation F-test, which has the assumptions of the observations being exchangable, which makes sense since we have 4 different groups in this sample and will need to permute the data. From the diagnostic plots for Sample 4, we see that the assumptions of normality and constant variance are violated by each of the cat distributions, leading us to turn to a nonparametric test to assess our data. 
+
+### ANOVA F-Test
+
+The parametric ANOVA F-Test is used for the comparison of several means. The ANOVA F-Test makes various assumptions about the data, with the most important being normality, homoscedasticity, independence, etc.
+
+The non-parametric Permutation F-Test is an ideal alternative to the one-way ANOVA because it does not assume the data to be normally distributed. However, instead of computing the exact permutation distribution, we will utilize the Monte Carlo Simulation. Instead of generating every single possible permutation and finding the exact p-value, we will simulate 10,000 random permutations to approximate the p-value. We should expect the data to be normally distributed if the permuted and observed p-values are similar.
+
+### Permutation F-Test
+
+The Permutation F-Test is carried out by first computing the observed F-Test Statistic(Fobs) from the one way ANOVA F-Test. Then, we will simulate 10,000 possible permutations of the observations among the 4 treatment groups, and calculate the F-Test Statistic for each permutation. Lastly, we will calculate the permuted p-value as the proportion of permuted F-Test Statistics that are greater than or equal to the observed F-Test Statistic. This p-value is calculated from an upper-tail test. If the p-value is less than our chosen significance level alpha = 0.05, we will reject the null hypothesis and conclude that at least one of the group means differs from the rest.
+
+```{r, echo = FALSE}
+# Stack 4 outcome columns into 1 column and create group(factor) column
+sample4 <- stack(data[6:9])
+
+# Rename headers
+colnames(sample4) <- c("outcome", "group")
+
+# # ANOVA F-test
+ANOVA_sample4_obs = aov(outcome ~ group, data = sample4)
+summary(ANOVA_sample4_obs)
+
+# Save observed F-test statistic
+Fobs = summary(ANOVA_sample4_obs)[[1]][1,4]
+
+# Save observed p-value
+F.normal.pvalue = summary(ANOVA_sample4_obs)[[1]][1,5]
+
+# Display observed F-test statistic
+print(paste("The observed F test statistic is", Fobs))
+
+# Display observed p-value
+print(paste("The observed p-value is", F.normal.pvalue))
+```
+
+```{r, echo = FALSE}
+# # Permutation F-test - Monte Carlo Simulation
+
+# Define value for total number of simulations
+tot=10000
+
+# Initialize empty vector to store 10,000 simulated F-test statistics
+f=c()
+ 
+for(i in 1:tot){
+  # permute the group membership or outcome
+  dat_perm = data.frame(outcome = sample4$outcome, group = sample(sample4$group))
+  
+  # # ANOVA F test
+  ANOVA_sample4_permut = aov(outcome ~ group, data = dat_perm)
+  f[i]=summary(ANOVA_sample4_permut)[[1]][1,4]
+   
+}
+# Calculate simulated p-value
+F.perm.pvalue = mean(f >= Fobs)
+
+# Display simulated p-value
+print(paste("The permutation p-value is", F.perm.pvalue))
+```
+
+### ANOVA F-Test Interpretation
+
+From the ANOVA test, we obtain an F-statistic of 0.9863 and a p-value of 0.4016. This p-value is higher than alpha = 0.05, leading us to fail to reject the null hypothesis that the group means are all equal to each other. We can conclude from this test that the group means of cats 1, 2, 3, and 4 are equal to each other. 
+
+### Permutation F-Test Interpretation
+
+We obtain a permutation p-value of 0.4224, which is the proportion of permutation F-statistics that are greater than or equal to F_obs. This p-value is certainly greater than our selected significance level of alpha = 0.05, which leads us to fail to reject the null hypothesis that the group means are equal to each other. We now have evidence to suggest that all four group means are equal to each other. 
+ 
+### Comparison of Non-Parametric & Parametric Methods
+
+Comparing the permutation F-test to the ANOVA test, both methods gave us high p-values that would surpass our significance level of alpha = 0.05. These results led us to fail to reject the null hypothesis in both cases, and lent credence to the notion that the group means of cat 1, cat 2, cat 3, and cat 4 are all equal to each other. We can mark this case from Sample 4 as another instance of a nonparametric and parametric test giving us the same results. 
+
+### Conclusion
+
+From our diagnostic tests ran on the 4 data sets before we analyzed them, we found that various assumptions of normality and constant variance were violated by those distributions. Thus, we turned to nonparametric procedures to assess our data, since these tests do not require typical assumptions to be met. For sample 1, we compared the results of the nonparametric binomial test to that of the parametric one sample t-test. From both tests, we obtained low enough p-values to where we would reject our null hypothesis that the mean of the sample is equal to zero, and conclude that the mean for the distribution is a value greater than zero. Sample 2 led us to use the Wilcoxon Rank-Sum test in comparison with the two-sample t-test. Our results from these two tests again gave us p-values lower than our significance level of 5%, so we rejected the null hypothesis and concluded that there indeed existed a statistically significant difference between the means of group 1 and group 2. For sample 3, we used the Kolmogrov-Smirnov test to see if the two distributions are different from one another. This test yielded us another low p-value, leading us to reject the null hypothesis for this test and conclude that the two distributions are not the same. Finally, sample 4 saw us conduct a permutation F-test for our nonparametric method and an ANOVA F-test for our parametric method, with the result of each being a p-value higher than our alpha of 0.05. We then failed to reject our null hypotheses for these tests and conclude that the group means for cat 1, cat 2, cat 3, and cat 4 are equal to each other. The big-picture result from conducting two tests for each of the four distributions is that each pair of nonparametric and parametric tests gave us the same conclusion. From this result, we can infer that finding the right nonparametric test that aligns with a particular parametric test leads to very similar results. One reason as to why this may be is matching the purposes of two particular tests, and the fact that nonparametric tests are supposed to cover for distributions that fail to meet the required assumptions of parametric tests. 
+
+
