@@ -1,1 +1,2 @@
 # STA-104
+Non-parametric hypothesis testing is carried out on data from several different distributions. Forms of testing included in this report are the one-sample t-test, F-test for equality of variances, two-sample t-test, Kolmogorov-Smirnov test, and ANOVA F-test. Assessment of each distribution is performed with diagnostic testing in the form of normal probability plots, boxplots, and histograms as well as providing explanation for which non-parametric test is most appropriate for each sample. 
